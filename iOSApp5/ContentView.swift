@@ -19,6 +19,10 @@ struct HomeView: View {
                     .font(.largeTitle)
                     .bold()
                     .padding(.top, 20)
+                Text("Swipe to the left to delete an alarm")
+                    .font(.callout)
+                    
+                    
                 
                 // List or Empty State
                 if manager.alarms.isEmpty {
@@ -36,12 +40,7 @@ struct HomeView: View {
                                 AlarmRow(alarm: $manager.alarms[index])
                             }
                         }
-                        .onDelete { indexSet in
-                            for index in indexSet {
-                                manager.removeNotification(for: manager.alarms[index])
-                            }
-                            manager.alarms.remove(atOffsets: indexSet)
-                        }
+                        .onDelete(perform: deleteAlarm)
                     }
                     .listStyle(.plain)
                 }
@@ -60,7 +59,6 @@ struct HomeView: View {
                         .padding(.horizontal)
                 }
                 .padding(.bottom, 20)
-                // Open sheet instantly
                 .sheet(item: $tempAlarm) { alarm in
                     NavigationStack {
                         AlarmDetailView(
@@ -79,6 +77,14 @@ struct HomeView: View {
                 if let error = error { print("Notification error: \(error.localizedDescription)") }
             }
         }
+    }
+    
+    // MARK: Delete alarm method
+    private func deleteAlarm(at offsets: IndexSet) {
+        for index in offsets {
+            manager.removeNotification(for: manager.alarms[index])
+        }
+        manager.alarms.remove(atOffsets: offsets)
     }
 }
 
